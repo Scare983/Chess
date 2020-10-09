@@ -8,55 +8,89 @@ class Rook(Piece):
     def __init__(self, name, team, location):
         super().__init__(name, team, location)
         # row \ column movemnt
-        movement = set((0, 99), (0, -99), (-99, 0), (99, 0))
+        moves = [(0, 99), (0, -99), (-99, 0), (99, 0)]
+        self.movement = set()
+        for item in moves:
+            self.movement.add(item)
 
 class Pawn(Piece):
+    hasMoved = False
     def __init__(self, name, team, location):
         super().__init__(name, team, location) 
         if team == 0:
             # pawn can move 1 north or 2 north if white
-            movement = set((0,1), (0,2))
+            moves = [(0,1), (0,2)]
         else:
-            movement = set((0,-1), (0,-2))
+            moves = [(0,-1), (0,-2)]
 
+        self.movement = set()
+        for item in moves:
+            self.movement.add(item)
 
-    def updateLocation(self, location):
+    def remove(self):
+        return self.identity.value
+
+    def updateLocation(self, team, toRow, toCol):
         # pawn cannt move 2 spaces after being touched
-        if team == 0:
-            movement.remove((0,2))
-        else:
-            movement.remove((0,-2))
-        # TODO: 
-
+        if not Pawn.hasMoved:
+            if team == 0:
+                self.movement.remove((0,2))
+            else:
+                self.movement.remove((0,-2)) 
+            Pawn.hasMoved = True
+        super().updateLocation(team, toRow, toCol)
 
 class Knight(Piece):
     def __init__(self, name, team, location):
         super().__init__(name, team, location)
-        movement = set((1,-2), (-1,-2), (1,2), (-1,2), (2, 1), (2,-1), (-2,1), (-2, -1)) 
+        moves = [(1,-2), (-1,-2), (1,2), (-1,2), (2, 1), (2,-1), (-2,1), (-2, -1)] 
         
+        self.movement = set()
+        for item in moves:
+            self.movement.add(item)
+
+    def remove(self):
+        return self.identity.value
 
 
 class Queen(Piece):
     def __init__(self, name, team, location):
         super().__init__(name, team, location)
         
-        movement = set((0,99), (0,-99), (-99,0), (99,0),(99,99) )
+        moves = [(0,99), (0,-99), (-99,0), (99,0),(99,99) ]
 
+        self.movement = set()
+        for item in moves:
+            self.movement.add(item)
 
+    def remove(self):
+        return self.identity.value
 
 class King(Piece):
     def __init__(self, name, team, location):
         super().__init__(name, team, location)
-        movement = set((0,1), (0,-1), (-1,0), (1,0), (1,1), (-1,1), (-1,-1), (1, -1))
+        moves = [(0,1), (0,-1), (-1,0), (1,0), (1,1), (-1,1), (-1,-1), (1, -1)]
         # TODO: add special case with castling
+
+        self.movement = set()
+        for item in moves:
+            self.movement.add(item)
+
+    def remove(self):
+        return self.identity.value
+
 
 class Bishop(Piece):
     def __init__(self, name, team, location):
         super().__init__(name, team, location)
-    
-        movement = set((99, 99), (-99, 99), (-99, -99), (99, -99))
+        moves = [(99, 99), (-99, 99), (-99, -99), (99, -99)]
 
+        self.movement = set()
+        for item in moves:
+            self.movement.add(item)
 
+    def remove(self):
+        return self.identity.value
 #-------------------------------------------------------------------#
 # "static" global methods
 
@@ -74,3 +108,6 @@ def evalPiece(name, team, location):
         return King(name, team, location)
     elif name == "Bishop":
         return Bishop(name, team, location)
+
+
+

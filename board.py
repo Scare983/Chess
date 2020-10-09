@@ -8,7 +8,7 @@ class Board():
         self.myBoard = {}
         self.p1 = player1
         self.p2 = player2
-        for number in list("12345678"):
+        for number in list("87654321"):
             self.myBoard[int(number)] = {}
             for val in list("abcdefgh"):
                 self.myBoard[int(number)][val] =  None
@@ -66,7 +66,7 @@ class Board():
             for col in self.myBoard[row].keys():
                 if self.myBoard[row][col] != None:
                     if self.myBoard[row][col].team == currentPlayer.team:
-                        myLocations.add((self.myBoard[row][col].row, self.myBoard[row][col].column))
+                        myLocations.add((row, col))
         return myLocations
 
 
@@ -92,46 +92,46 @@ class Board():
         availableMoves = set()
         currentRow = piece.row
         currentCol = piece.column
-        if isinstance(Pawn, piece):
+        if isinstance(piece, Pawn ):
             for move in piece.movement:
                 (col, row) = move
                 try:
                     # newCol should not change...
                     newRow = currentRow + row 
-                    newCol = ord(col) + ord(currentCol)
+                    newCol = col + ord(currentCol)
                     itemHere = self.myBoard[newRow][chr(newCol)]
                 except:
                     continue 
 
                 if itemHere == None:
                     availableMoves.add((newRow, chr(newCol)))
-                else:
-                    # don't add.
-                    # check diagnals
-                    # white, aka North.  check diagnols if enemies
-                    try:
-                        diagItem = self.myBoard[newRow][chr(newCol+1)]
-                        if diagItem != None:
-                            if diagItem.team != piece.team:
-                                availableMoves.add((newRow, chr(newCol+1)))
-                    except:
-                        continue
+                # don't add.
+                # check diagnals
+                # white, aka North.  check diagnols if enemies
+                try:
+                    diagItem = self.myBoard[newRow][chr(newCol+1)]
+                    if diagItem != None:
+                        if diagItem.team != piece.team:
+                            availableMoves.add((newRow, chr(newCol+1)))
+                except:
+                    continue
 
-                    try:
-                        diagItem2 = self.myBoard[newRow][chr(newCol-1)]
-                        if diagItem2 != None:
-                            if diagItem2.team != piece.team:
-                                availableMoves.add((newRow, chr(newCol-1)))
-                    except:
-                        continue
+                try:
+                    diagItem2 = self.myBoard[newRow][chr(newCol-1)]
+                    if diagItem2 != None:
+                        if diagItem2.team != piece.team:
+                            availableMoves.add((newRow, chr(newCol-1)))
+                except:
+                    continue
 
 
-        elif isinstance(Knight, piece):
+        elif isinstance(piece, Knight ):
             for move in piece.movement:
                 (col, row) = move
                 try:
                     newRow = currentRow + row 
-                    newCol = ord(col) + ord(currentCol)
+                    newCol = col + ord(currentCol)
+                    print("Row: {}\t Col:{}".format(newRow, chr(newCol)))
                     itemHere = self.myBoard[newRow][chr(newCol)]
                     # TODO: add check to see if king is in Check before adding to avalibale moveset. 
                     if itemHere == None:
@@ -143,8 +143,8 @@ class Board():
                             pass
 
                 # if new row/col not found in dict, then it is is not on the board.  
-                except: 
-                    print("Debug.  Found location that is not on board when caclulating legal moves.")
+                except Exception as e:
+                    #print("Debug.  Found location that is not on board when caclulating legal moves.")
                     continue
                 
 
@@ -156,8 +156,8 @@ class Board():
                     try:
                         i = 1
                         while True:
-                            newRow = cuurrentRow + row
-                            newCol = ord(col) + i
+                            newRow = currentRow + row
+                            newCol = col + i
                             i+=1
                             itemHere = self.myBoard[newRow][chr(newCol)]
                             if itemHere == None:
@@ -215,10 +215,30 @@ class Board():
                     except:
                         continue
 
+        return availableMoves
+    
+    def movePiece(self, piece, toRow, toCol):
+        score = 0 
+        if self.myBoard[toRow][toCol] != None:
+            score  = self.myBoard[toRow][toCol].remove()
+        # update spot on board.
+        self.myBoard[piece.row][piece.column] = None
+        self.myBoard[toRow][toCol] = piece 
+        # update piece known location
+        piece.updateLocation(piece.team, toRow, toCol) 
+        return score 
+
     def prettyPrintBoard(self):
+        
+        firstCol = 1
         for row in self.myBoard.keys():
             print("")
+            print(row, end="")
+
             for column in self.myBoard[row].keys():
+                if firstCol:
+                    print(*[column for column in self.myBoard[row].keys()])
+                    firstCol = 0
                 if self.myBoard[row][column] != None:
                     print("\t{}".format(self.myBoard[row][column].identity.name),end="")    
                 else:

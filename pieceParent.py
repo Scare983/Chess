@@ -11,12 +11,14 @@ class Piece():
     #override this method
     def movement():
         pass
-    
+    def updateLocation(self, team, toRow, toCol):
+        self.row = toRow
+        self.column = toCol
 
 class PieceConverter(Enum):
     PAWN = 1
+    BISHOP = 4
     KNIGHT = 3
-    BISHOP = 3 
     ROOK = 5 
     QUEEN = 9 
     KING = 100

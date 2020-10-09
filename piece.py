@@ -83,7 +83,7 @@ class King(Piece):
 class Bishop(Piece):
     def __init__(self, name, team, location):
         super().__init__(name, team, location)
-        moves = [(99, 99), (-99, 99), (-99, -99), (99, -99)]
+        moves = [(99, 99)]
 
         self.movement = set()
         for item in moves:

@@ -8,7 +8,7 @@ gameInProgress = 0
 def confirmPieceToMove(moveSet, name):
     # if piece has ability to move.  
     if moveSet:
-        answer = input("Would you like to move your {}: Y|N".format(name))
+        answer = input("\nWould you like to move your {} (Y|N)?\n".format(name))
         if answer.lower() == "y":
             
             location = input("To which location?(Row|Col):\n{}\n".format(moveSet))
@@ -27,8 +27,13 @@ def confirmPieceToMove(moveSet, name):
 
 
 def printTurn(team):
+    if team == 1: 
+        color = '\33[100m'
+    else:
+        color = '\33[101m'
+
     print("-"*20)
-    print("IT iS TEAM {} turn".format(team))
+    print( color + "It is team"  + " {} ".format(team) + "turn\033[0m")
     print("-"*20)
 
 
@@ -48,11 +53,9 @@ if __name__ == "__main__":
             currentTurn = p1
             otherTurn = p2
             
-            print(myBoard.myBoard[1]["c"].identity)
 
             while gameInProgress:
                 printTurn(currentTurn.team)
-                print(myBoard.myBoard[1]["c"].identity)
                 myBoard.prettyPrintBoard()
                 pieceLocations = myBoard.getLegalMoveablePieces(currentTurn)
                 print("\nThese are your piece locations:\n{}".format(pieceLocations))
@@ -72,10 +75,10 @@ if __name__ == "__main__":
                         print("Empty square detected")
                     
                     pieceMovementSet = myBoard.getLegalMoves(piece)
-                    print("Available moves from the {} at {}{} are: \n{}".format(piece.identity.name, row, col, pieceMovementSet))
+                    #print("Available moves from the {} at {}{} are: \n{}".format(piece.identity.name, row, col, pieceMovementSet))
+                    myBoard.prettyPrintBoard(pieceMovementSet)
                     element = confirmPieceToMove(pieceMovementSet, piece.identity.name)
                     if element:
-                        #TODO: add movemenet to board.
                         (toRow, toCol) = element
                         val =  myBoard.movePiece(piece, toRow, toCol)
                         currentTurn.score += val
